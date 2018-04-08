@@ -22,6 +22,7 @@ def get_names(path):
     return s
 
 
+# this function is from @daanraman on github
 def split_ds(all_data_dir, training_data_dir, testing_data_dir, testing_data_pct):
     # Recreate testing and training directories
     if testing_data_dir.count('/') > 1:
