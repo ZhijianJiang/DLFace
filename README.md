@@ -1,10 +1,10 @@
 # DLFace
 This is the final project of COMS 4995 Deep Learning for Computer Vision.
 
+
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
-
 
 ### General Instructions
 * Download CACD2000 dataset and preprocessed them by Kaimao Yang
@@ -19,9 +19,11 @@ resnetface folder
 * Run vgg_model/model.py. Change the train_data_dir, validation_data_dir and eva_data_dir to your paths.
 
 
+
 ### How to train the ResNet + VGG model
 * Download [VGG-16 pretrained weights](https://github.com/fchollet/deep-learning-models/releases/download/v0.1/vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5) in
 resnetface folder
+* Download CACD2000 dataset and preprocessed them by Kaimao Yang
 * Run the resnetface.py like the following
 
 `python3 resnetface.py path/to/CACD2000/train path/to/CACD2000/val path/to/vgg-pretrained-h5-file`
@@ -54,4 +56,4 @@ resnetface folder
 * Zhijian Jiang
 * Yiyang Qian
 
-
+## Acknowledgments
