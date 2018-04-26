@@ -52,7 +52,7 @@ steps_per_epoch_val = nb_validation_samples / batch_size
 
 nc = len(train_generator.class_indices)
 
-# yq
+# yq2230
 """This part trains the vgg network"""
 tensorboard_callback = TensorBoard(log_dir='./logs/largedata', histogram_freq=0,
                                    write_graph=True, write_images=False)
@@ -112,7 +112,7 @@ def build_vgg16(framework='tf'):
     return model
 
 
-# yq
+# yq2230
 """ This part loads the vgg weights """
 
 weights_path = './data/vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5'
@@ -127,10 +127,9 @@ top_model.add(Dense(256, activation='relu'))
 top_model.add(Dropout(0.5))
 top_model.add(Dense(nc, activation='sigmoid'))
 
-# yq
+# yq2230
 # add the model on top of the convolutional base
 tf_model.add(top_model)
-
 tf_model.summary()
 
 from keras.models import load_model
@@ -151,7 +150,7 @@ tf_model.fit_generator(train_generator,
                        steps_per_epoch=steps_per_epoch_train,
                        epochs=1,
                        callbacks=[tensorboard_callback, checkpoint])
-# yq
+# yq2230
 # Before unfreezing the first 25 layers, we got a validation accuracy of 83%.
 
 
@@ -174,11 +173,11 @@ tf_model.fit_generator(train_generator,
                        epochs=50,
                        callbacks=[tensorboard_callback, checkpoint])
 
-# yq
+# yq2230
 # After unfreezing and training the whole network, the accuracy finnaly reaches 87%.
 
 
-# yq
+# yq2230
 eva_data_dir = './data/c_test'
 
 eva_datagen = ImageDataGenerator(rescale=1. / 255)
@@ -191,6 +190,96 @@ eva_generator = eva_datagen.flow_from_directory(
 tf_model.evaluate_generator(eva_generator)
 
 # The accuracy on the test set is 89%. We have successfully built a easy baseline model for face recognition.
+
+# yq2230
+# Then we load the trained model, and we need to remove the last two layers, for applying CAM
+tf_model = load_model('./large_model2.h5')
+tf_model.pop()
+tf_model.pop()
+
+# yq2230
+# Add a global average pooling layer, a dense layer and a softmax output layer
+from keras.layers.core import Lambda
+from keras import backend as K
+from keras.optimizers import SGD
+
+def global_average_pooling(x):
+    return K.mean(x, axis = (2, 3))
+
+def global_average_pooling_shape(input_shape):
+    return input_shape[0:2]
+
+tf_model.add(Lambda(global_average_pooling, output_shape=global_average_pooling_shape))
+tf_model.add(Dense(nc, activation = 'softmax', init='uniform'))
+sgd = SGD(lr=0.0000001, decay=1e-6, momentum=0.5, nesterov=True)
+tf_model.summary()
+
+checkpoint = ModelCheckpoint("./large_model2_cam.h5", monitor='val_loss', 
+                             verbose=1, save_best_only=True, mode='min')
+
+#yq2230
+#Train the model 
+tf_model.compile(loss = 'categorical_crossentropy', \
+optimizer = sgd, metrics=['accuracy'])
+
+tf_model.fit_generator(train_generator, 
+              initial_epoch=0, 
+              verbose=1, 
+              validation_data=validation_generator, 
+              steps_per_epoch=steps_per_epoch_train, 
+              epochs=50, 
+              callbacks=[tensorboard_callback, checkpoint])
+
+# yq2230
+# function to do CAM
+import cv2
+from array import array
+
+def visualize_class_activation_map(model_path, img_path, output_path):
+    model = load_model(model_path)
+    original_img = cv2.imread(img_path, 1)
+#     print(original_img)
+    width, height, _ = original_img.shape
+#     print(width)
+#     print(height)
+
+    img = np.array([np.transpose(np.float32(original_img), (0, 1, 2))])
+    print(img.shape)
+
+    class_weights = model.layers[-1].get_weights()[0]
+#     print(class_weights)
+    final_conv_layer = get_output_layer(model, "conv5_3")
+    get_output = K.function([model.layers[0].input], \
+                [final_conv_layer.output, 
+    model.layers[-1].output])
+    [conv_outputs, predictions] = get_output([img])
+    conv_outputs = conv_outputs[0, :, :, :]
+
+    #Create the class activation map.
+    cam = np.zeros(dtype = np.float32, shape = conv_outputs.shape[1:3])
+    target_class = 0
+    for i, w in enumerate(class_weights[:, target_class]):
+            cam += w * conv_outputs[i, :, :]
+#     print "predictions", predictions
+    cam /= np.max(cam)
+    cam = cv2.resize(cam, (height, width))
+    heatmap = cv2.applyColorMap(np.uint8(255*cam), cv2.COLORMAP_JET)
+    heatmap[np.where(cam < 0.2)] = 0
+    img = heatmap*0.5 + original_img
+    cv2.imwrite(output_path, img)
+
+def get_output_layer(model, layer_name):
+    # get the symbolic outputs of each "key" layer (we gave them unique names).
+    layer_dict = dict([(layer.name, layer) for layer in model.layers])
+    layer = layer_dict[layer_name]
+    return layer
+
+# yq2230
+# take out several pics to try CAM
+visualize_class_activation_map("./large_model2_cam.h5", './data/c_validation/Alexa_Vega/17_Alexa_Vega_0003.jpg', "heatmap_alexa_vega.jpg")
+
+
+
 
 # ky2371
 """ Here we pick some of the images that we make mistake to have a look """
