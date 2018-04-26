@@ -12,6 +12,8 @@ from sklearn.model_selection import train_test_split
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
+
+# zj2226
 def load_lfw_data(data_home='~/Downloads/scikit_learn_data',
                   funneled=True,
                   resize=1,
@@ -19,6 +21,8 @@ def load_lfw_data(data_home='~/Downloads/scikit_learn_data',
                   test_size=0.25,
                   random_state=42):
     """
+    This is the function to load lfw dataset
+
     Args:
         data_home (str, optional): Default to '~/Downloads/scikit_learn_data'. Path to save the lfw data.
         funneled (boolean, optional): Default to True. Download the funneled dataset.
@@ -71,13 +75,18 @@ def load_lfw_data(data_home='~/Downloads/scikit_learn_data',
     print('Done!')
 
 
+# zj2226
 def main():
     """
-    For test
+    This is the main function for test
     """
     X_train, X_test, y_train, y_test = load_lfw_data()
 
 
+# zj2226
 if __name__ == "__main__":
+    """
+    This is to call main function
+    """
     main()
 
