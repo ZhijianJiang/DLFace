@@ -15,12 +15,12 @@ resnetface folder
 
 ## File Description
 
-├── LFW.py by Zhijian Jiang offering functions to load LFW dataset
-├── README.md
-├── requirements.txt
-└── resnetface
-    ├── models.py by Zhijian Jiang offering functions to build models
-    └── resnetface.py by Zhijian Jiang to train the model
+├── LFW.py by Zhijian Jiang offering functions to load LFW dataset   
+├── README.md   
+├── requirements.txt   
+└── resnetface   
+    ├── models.py by Zhijian Jiang offering functions to build models   
+    └── resnetface.py by Zhijian Jiang to train the model   
 
 ## Code Reference
 * http://scikit-learn.org/stable/auto_examples/applications/plot_face_recognition.html#sphx-glr-auto-examples-applications-plot-face-recognition-py
