@@ -18,7 +18,8 @@ These instructions will get you a copy of the project up and running on your loc
 resnetface folder
 * Run vgg_model/model.py. Change the train_data_dir, validation_data_dir and eva_data_dir to your paths.
 
-
+### How to apply CAM
+* Call function visualize_class_activation_map(model_path, img_path, output_path), and the img_path is a certian picture, so does the output_path.
 
 ### How to train the ResNet + VGG model
 * Download [VGG-16 pretrained weights](https://github.com/fchollet/deep-learning-models/releases/download/v0.1/vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5) in
@@ -49,6 +50,7 @@ resnetface folder
 * http://scikit-learn.org/stable/auto_examples/applications/plot_face_recognition.html#sphx-glr-auto-examples-applications-plot-face-recognition-py
 * https://github.com/rcmalli/keras-vggface/blob/master/keras_vggface/models.py
 * this course's homework5
+* https://jacobgil.github.io/deeplearning/class-activation-maps
 
 ## Authors
 
